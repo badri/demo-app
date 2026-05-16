@@ -1,2 +1,3 @@
 # Rendered at deploy-time via envsubst with GH Actions secrets in scope.
 KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
+DEST_VM_HOST=$DEST_VM_HOST
