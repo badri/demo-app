@@ -1,5 +1,5 @@
 service: demo-app
-image: ghcr.io/badri/demo-app
+image: badri/demo-app
 ssh:
   user: kamal
 builder:
