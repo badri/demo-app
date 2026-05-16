@@ -2,6 +2,8 @@ service: demo-app-staging
 image: badri/demo-app
 ssh:
   user: kamal
+builder:
+  arch: arm64
 servers:
   web:
     hosts:
