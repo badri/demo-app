@@ -63,7 +63,7 @@ jobs:
         echo "host=$HOST" >> "$GITHUB_OUTPUT"
         ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
     - name: Render Kamal secrets
-      run: envsubst < .kamal/secrets.tpl > .kamal/secrets
+      run: envsubst < .kamal/secrets.${DEST}.tpl > .kamal/secrets
       env:
         DEST_VM_HOST: ${{ steps.resolve.outputs.host }}
         KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -74,4 +74,8 @@ jobs:
     - name: Report deployed URL
       if: always()
       run: |
-        curl -sf -X PATCH           -H "Authorization: Bearer ${{ secrets.VMKIT_SERVICE_KEY }}"           -H "Content-Type: application/json"           "https://gateway.vmkit.dev/api/internal/deploys/by-run/${{ github.run_id }}/url"           -d "{"url": "https://${{ steps.resolve.outputs.host }}"}" || true
+        curl -sf -X PATCH \
+          -H "Authorization: Bearer ${{ secrets.VMKIT_SERVICE_KEY }}" \
+          -H "Content-Type: application/json" \
+          "https://gateway.vmkit.dev/api/internal/deploys/by-run/${{ github.run_id }}/url" \
+          -d "{\"url\": \"https://${{ steps.resolve.outputs.host }}\"}" || true
