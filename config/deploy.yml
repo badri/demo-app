@@ -2,7 +2,6 @@ service: demo-app
 image: badri/demo-app
 ssh:
   user: kamal
-  extra_args: ["-o", "StrictHostKeyChecking=accept-new"]
 builder:
   arch: amd64
 servers:
