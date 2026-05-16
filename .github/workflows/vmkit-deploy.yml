@@ -38,7 +38,8 @@ jobs:
       run: |
         HOST=$(curl -sf -H "Authorization: Bearer ${{ secrets.VMKIT_SERVICE_KEY }}" "https://gateway.vmkit.dev/api/internal/instances/${{ inputs.instance_id }}/host")
         echo "host=$HOST" >> "$GITHUB_OUTPUT"
-        ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+        ssh-keygen -R "$HOST" 2>/dev/null || true
+        ssh-keyscan "$HOST" 2>/dev/null >> ~/.ssh/known_hosts
     - name: Render Kamal secrets
       run: envsubst < .kamal/secrets.${DEST}.tpl > .kamal/secrets.${DEST}
       env:
