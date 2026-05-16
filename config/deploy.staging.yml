@@ -1,0 +1,15 @@
+service: demo-app-staging
+image: ghcr.io/badri/demo-app
+servers:
+  web:
+    hosts:
+    - $DEST_VM_HOST
+proxy:
+  ssl: true
+  host: demo-app-staging.vmkit.app
+  app_port: 8000
+registry:
+  server: ghcr.io
+  username: vmkit-deploy[bot]
+  password:
+  - KAMAL_REGISTRY_PASSWORD
