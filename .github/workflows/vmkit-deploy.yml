@@ -63,7 +63,7 @@ jobs:
         echo "host=$HOST" >> "$GITHUB_OUTPUT"
         ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
     - name: Render Kamal secrets
-      run: envsubst < .kamal/secrets.${DEST}.tpl > .kamal/secrets
+      run: envsubst < .kamal/secrets.${DEST}.tpl > .kamal/secrets.${DEST}
       env:
         DEST_VM_HOST: ${{ steps.resolve.outputs.host }}
         KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
