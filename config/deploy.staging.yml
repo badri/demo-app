@@ -1,5 +1,5 @@
 service: demo-app-staging
-image: ghcr.io/badri/demo-app
+image: badri/demo-app
 ssh:
   user: kamal
 servers:
