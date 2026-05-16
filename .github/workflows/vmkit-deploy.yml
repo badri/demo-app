@@ -2,23 +2,10 @@ name: VMKit Deploy
 "on":
   workflow_dispatch:
     inputs:
-      branch:
-        description: Branch to deploy
-        required: true
-        type: string
-      dest:
-        description: Deployment destination
-        required: true
-        type: string
-      instance_id:
-        description: VMKit instance ID
-        required: true
-        type: string
-      action:
-        description: Deploy action (deploy, rollback)
-        required: false
-        default: deploy
-        type: string
+      branch: {required: true, type: string}
+      dest: {required: true, type: string}
+      instance_id: {required: true, type: string}
+      action: {default: deploy, type: string}
 env:
   DEST: ${{ inputs.dest }}
   SERVICE: demo-app-${{ inputs.dest }}
@@ -26,22 +13,13 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    permissions: {contents: read, packages: write}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ inputs.branch }}
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Log in to GHCR
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v4
+      with: {ref: "${{ inputs.branch }}"}
+    - uses: docker/setup-buildx-action@v3
+    - uses: docker/login-action@v3
+      with: {registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}"}
     - name: Build and push image
       uses: docker/build-push-action@v6
       with:
@@ -54,8 +32,7 @@ jobs:
       run: sudo gem install kamal
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.VMKIT_SSH_PRIVATE_KEY }}
+      with: {ssh-private-key: "${{ secrets.VMKIT_SSH_PRIVATE_KEY }}"}
     - name: Resolve VM host
       id: resolve
       run: |
@@ -67,6 +44,10 @@ jobs:
       env:
         DEST_VM_HOST: ${{ steps.resolve.outputs.host }}
         KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    - name: Substitute VM host in Kamal config
+      run: sed -i "s|\$DEST_VM_HOST|${DEST_VM_HOST}|g" config/deploy.${DEST}.yml
+      env:
+        DEST_VM_HOST: ${{ steps.resolve.outputs.host }}
     - name: Deploy with Kamal
       run: kamal deploy -d ${{ inputs.dest }}
       env:
